@@ -81,3 +81,22 @@ exports.usersDeletePost = (req, res) => {
   usersStorage.deleteUser(req.params.id); 
   res.redirect("/");
 }
+
+exports.usersSearchGet = (req, res) => {
+  let search = req.query.search.toLowerCase()
+  //search name 
+  let users = usersStorage.getUsers(); 
+  let usersNames = users.filter(x => x.firstName.toLowerCase().includes(search) || x.lastName.toLowerCase().includes(search))
+  let usersEmail = users.filter(x => x.email.toLowerCase().includes(search)); 
+
+  // Concatenate and remove duplicates based on the 'id' property
+  const combinedArray = [...usersNames, ...usersEmail].filter((item, index, self) => 
+    index === self.findIndex((obj) => obj.id === item.id)
+  );
+  
+  res.render("search", {
+    title: "Search results",
+    users: combinedArray,
+    search: search, 
+  });
+}
